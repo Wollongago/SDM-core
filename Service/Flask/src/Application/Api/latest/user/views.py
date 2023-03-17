@@ -1,6 +1,7 @@
 import logging
 
 from Application.Api.latest.__schemas.user import UserDump
+from Application.models import User
 from bson import ObjectId
 from Extensions import flask_pymongo
 from Extensions.Nestable.Classy import Classy42
@@ -32,3 +33,28 @@ class UserView(Classy42):
         schema = UserDump()
         user = schema.dump(user)
         return {'payload': {'user': user}}
+
+    # delete user
+    @route('/<user_id>', methods=['DELETE'])
+    def delete_user(self,user_id):
+        cnt = flask_pymongo.db.users.delete_one({"_id": ObjectId(user_id)}).deleted_count
+        if cnt == 0:
+            return {'error': 'User not deleted'}
+        return {'payload': {'user': {'_id': user_id}}}
+    
+    # user login
+    @route('/login', methods=['POST'])
+    def login(self):
+        j_req = request.get_json()
+        user = User(email=j_req['email'])
+        if user is None:
+            return {'error': 'User not found'}
+        if not user.check_password(j_req['password']):
+            return {'error': 'Wrong password'}
+        user = user.dump_short()
+        return {'payload': {'user': user}}
+    
+    # user logout
+    @route('/logout', methods=['POST'])
+    def logout(self):
+        return {'payload': {'user': None}}
