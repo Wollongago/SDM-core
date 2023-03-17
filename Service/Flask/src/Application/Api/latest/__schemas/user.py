@@ -3,7 +3,6 @@ from copy import deepcopy
 
 from Extensions import flask_pymongo
 from Extensions.Marshmallow import Fields
-from flask import get_flashed_messages
 from marshmallow import Schema, fields
 from marshmallow.utils import isoformat
 

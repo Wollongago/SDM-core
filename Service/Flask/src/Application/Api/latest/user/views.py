@@ -58,3 +58,13 @@ class UserView(Classy42):
     @route('/logout', methods=['POST'])
     def logout(self):
         return {'payload': {'user': None}}
+    
+    # review user
+    @route('/<user_id>/review', methods=['POST'])
+    def review_user(self,user_id):
+        j_req = request.get_json()
+        j_req['reviewer_id'] = user_id
+        id = flask_pymongo.db.reviews.insert_one(j_req).inserted_id
+        if id is None:
+            return {'error': 'Review not created'}
+        return {'payload': {'review': {'_id': id}}}
