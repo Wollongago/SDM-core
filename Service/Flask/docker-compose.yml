@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  flask-http:
+    privileged: true
+    build:
+      context: .
+    volumes:
+      - "./src:/application"
+    networks:
+      - sb-net
+    environment:
+      - DEVELOPMENT=True
+    user: ${UID:-1000}:${GID:-1000}
+    working_dir: /application
+    command: >
+      dockerize -wait tcp://mongodb:27017 -timeout 30s python run.py
+    ports:
+      - "8000:8000"
+
+  mongodb:
+    image: sb-mongodb:latest
+    privileged: true
+    volumes:
+      - /data/mongo_db:/data/mongo_db
+      - ../MongoDB/configs/development/mongod.conf:/etc/mongod.conf
+    networks:
+      - sb-net
+    hostname: mongodb
+    command: >
+      mongod  --config /etc/mongod.conf
+
+networks:
+  sb-net:
+    external: true
