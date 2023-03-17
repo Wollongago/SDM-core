@@ -6,6 +6,14 @@ export GID:=$(shell id -g)
 default:
 	@echo "Default target"
 
+build:
+	@echo "============= Building Flask image ============="
+	test -n "$(VERSION)"  # $$VERSION
+	docker build --label sb.flask.version=${VERSION} \
+	-t sb/flask:${VERSION} \
+	-t sb/flask:latest \
+	-f Dockerfile .	
+
 up:
 	@echo "============= Sarting Webstack ============="
 	@docker network inspect sb-net >/dev/null || docker network create -d bridge --subnet 42.42.0.0/24 --gateway 42.42.0.1 sb-net

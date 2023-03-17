@@ -29,7 +29,7 @@ class Global(object):
                         "PORT":27017}
     
     # PY-MONGO SETTINGS
-    MONGO_URI = "mongodb://mongodb:27017/SB?maxPoolSize=200"
+    MONGO_URI = "mongodb://mongodb:27017/StudyBuddy?maxPoolSize=200"
 
     # TODO:AMPQ Broker SETTINGS
 
