@@ -12,6 +12,7 @@ class Registration(Schema):
     password = fields.String(required=True,error_messages={'required': 'Password is required'})
     password_second = fields.String(required=True,error_messages={'required': 'Password confirmation is required'})
     name = fields.String(required=True,error_messages={'required': 'Name is required'})
+    tutor = fields.Boolean(required=False,missing=False)
 
     @validates('password')
     def validate_password(self, value):

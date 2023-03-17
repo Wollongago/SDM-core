@@ -66,7 +66,7 @@ class User(UserDict):
         if password_hash is None:
             return False
         password_hash = password_hash.decode()
-        return crypt.crypt(inp, password_hash) == password_hash
+        return crypt.crypt(input, password_hash) == password_hash
     
     def insert(self):
         del self.data['_id']
@@ -79,6 +79,62 @@ class User(UserDict):
 
     def dump_short(self):
         fields = ['_id', 'name']
+        data = copy.deepcopy(self.data)
+        for key in list(data.keys()):
+            if key not in fields:
+                del data[key]
+        return data
+    
+class Session(UserDict):
+    """
+    Represent tutor session, implementing proper methods
+    """
+
+    _data = {
+        '_id': None,
+        'tutor': None,
+        'start': None,
+        'end': None,
+        'description': None,
+        'max_students': None,
+        'subject': None,
+        'price': None,
+    }
+
+    def __init__(self,_id=None, data=None, tutor=None, start=None, end=None):
+        super().__init__(copy.deepcopy(self._data))
+        if data is not None:
+            self.update(data)
+    
+        find_by = {}
+        if _id is not None:
+            _id = _id if isinstance(_id, ObjectId) else ObjectId(_id)
+            find_by['_id'] = _id
+        if len(find_by) > 0:
+            session = flask_pymongo.db.sessions.find_one(find_by)
+            if session is not None:
+                self.update(session)
+    
+    @classmethod
+    def create_from(cls,data):
+        session = cls(data=data)
+        return session
+    
+    @property
+    def id(self):
+        return self.data.get('_id', None)
+    
+    def insert(self):
+        del self.data['_id']
+        self.data['_id'] = flask_pymongo.db.sessions.insert_one(self.data).inserted_id
+    
+    def __str__(self):
+        return "<%s (id:%s, tutor:%s)>" % (self.__class__.__name__,
+                                                    self.id,
+                                                    self.get('tutor', None))
+    
+    def dump_short(self):
+        fields = ['_id', 'tutor', 'start', 'end', 'description', 'max_students']
         data = copy.deepcopy(self.data)
         for key in list(data.keys()):
             if key not in fields:
