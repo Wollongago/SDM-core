@@ -40,10 +40,9 @@ class Registration(Schema):
     @post_load
     def create_user(self, data):
         del data['password_second']
-        exists = flask_pymongo.db.user.find_one({'email': data['email']})
+        exists = flask_pymongo.db.users.find_one({'email': data['email']})
         if exists is not None:
             raise ValidationError('User with this email already exists', 'email')
-        
         user = User.create_from(data)
         user.insert()
         return user

@@ -61,12 +61,12 @@ class User(UserDict):
     def generate_password(password):
         return str.encode(crypt.crypt(password, salt=crypt.METHOD_SHA512))
     
-    def check_password(self,input):
+    def check_password(self,inp):
         password_hash = self.data.get('password_hash', None)
         if password_hash is None:
             return False
         password_hash = password_hash.decode()
-        return crypt.crypt(input, password_hash) == password_hash
+        return crypt.crypt(inp, password_hash) == password_hash
     
     def insert(self):
         del self.data['_id']
